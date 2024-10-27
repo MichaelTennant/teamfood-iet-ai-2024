@@ -57,6 +57,8 @@ Using [DPT Large](https://huggingface.co/Intel/dpt-large), a pretrained depth pr
 
 Open planned properties typically have a higher demand and thus price as opposed to closed-planned properties. This is necessary data as the property square ft area cannot necessarly be used to determine how open planned a property is.
 
+Unfortunately the model does have a few issues and is not 100% reliable. For instance "99.kitchen.jpg" in image training data contains a large black oven, which DPT Large assumes is a long corridor.  
+
 #### DPT Large Input
 '''
 st.image(f"{PROJECT_ROOT}/res/img/dpt_before.jpg")
@@ -68,7 +70,7 @@ st.image(f"{PROJECT_ROOT}/res/img/dpt_after.png")
 ### Image Based Price Prediction Model
 The model is passed the image, which is resized to 448x448 with 3 colour channels. This data is further randomly augmented keras and passed through several relu keras layers, before finally returning a price prediction.
 
-Unfortunately due to time constraints we were unable to implement batch training so we're limited to the 16GB GPU memory, and thus could only train the model on ~20% of the augmented data.
+Unfortunately due to time constraints we were unable to implement batch learning so we're limited to the 16GB GPU memory, and thus could only train the model on ~20% of the augmented data.
 
 #### Image Model Root Mean Square Error
 '''
@@ -98,14 +100,8 @@ Uses a multilayer perceptron with the following inputs
  - Square ft Area.
  - Average Price in Zip-Code (Or total average price if zip-code not in training data).
 
-#### Statistics Model Root Mean Square Error
-'''
+Unfortunately the stats model was trained in chunks so we don't have a root mean square error over training epochs graph for this model.
 
-'''
-<insert statistics model Root Mean Square Error graph>
-'''
-
-'''
 ### Combining the models
 Each AI model was trained separately to prevent overcomplicating the model and speed up training time signficiantly.
 
@@ -122,3 +118,9 @@ To combine all the models, after the staticics based price prediction model is t
 '''
 <insert combined model Root Mean Square Error graph>
 '''
+
+'''
+## Thank you!
+'''
+st.image(f"{PROJECT_ROOT}/res/img/team_plus_extras.jpg")
+st.image(f"{PROJECT_ROOT}/res/img/team_plus_extras_depth.png")
