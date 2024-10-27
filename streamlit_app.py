@@ -69,6 +69,15 @@ st.image(f"{PROJECT_ROOT}/res/img/dpt_after.png")
 The model is passed the image, which is resized to 448x448 with 3 colour channels. This data is further randomly augmented keras and passed through several relu keras layers, before finally returning a price prediction.
 
 Unfortunately due to time constraints we were unable to implement batch training so we're limited to the 16GB GPU memory, and thus could only train the model on ~20% of the augmented data.
+
+#### Image Model Root Mean Square Error
+'''
+
+'''
+<insert image model Root Mean Square Error graph>
+'''
+
+'''
 ---
 
 ## Training AI to Decect Pricing from Property Statistics
@@ -89,13 +98,27 @@ Uses a multilayer perceptron with the following inputs
  - Square ft Area.
  - Average Price in Zip-Code (Or total average price if zip-code not in training data).
 
-### Combining the models
-Each AI model was trained separately...
+#### Statistics Model Root Mean Square Error
+'''
 
-To combine all the models, after the staticics based price prediction model is trained, we add the following addition numerical inputs and continue training
+'''
+<insert statistics model Root Mean Square Error graph>
+'''
+
+'''
+### Combining the models
+Each AI model was trained separately to prevent overcomplicating the model and speed up training time signficiantly.
+
+To combine all the models, after the staticics based price prediction model is trained, we add the following addition numerical inputs and resume training it with the additional data
  - Lower Quartile Distance from DPT Large on bathroom.
  - Lower Quartile Distance from DPT Large on bedroom.
  - Lower Quartile Distance from DPT Large on kitchen.
  - Quantity of detected windows from frontal.
  - Detected price from image based price prediction model
+
+ #### Combined Model Root Mean Square Error
+'''
+
+'''
+<insert combined model Root Mean Square Error graph>
 '''
