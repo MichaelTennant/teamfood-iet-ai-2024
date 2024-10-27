@@ -137,9 +137,8 @@ To combine all the models, after the staticics based price prediction model is t
  - Quantity of detected windows from frontal.
 
 We then planned to use another AI model to combine the two results from the modified statistics based prediction model and the image based model, yielding a single output. However we ran out of time on training the image and image+stats combinator model.
-
-#### AI Model Pipeline Plan
 '''
+st.header("AI Model Pipeline Plan")
 st.image(f"{PROJECT_ROOT}/res/img/combined_model_diagram.png")
 '''
 ---
