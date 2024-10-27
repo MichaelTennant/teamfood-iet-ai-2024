@@ -25,7 +25,7 @@ st.markdown(
 
 '''
 ---
-# :house: AI House Pricing Prediction (Team Food)
+# :house: AI House Price Prediction (Team Food)
 *We were here for the food.*
 
 ---
@@ -64,7 +64,9 @@ By using a pretrained [resnet](https://pytorch.org/hub/pytorch_vision_resnet/) m
 
 ### Collaging Images
 We initially decided to create a collage of the matching bathroom, bedroom, frontal, and kitchen images to combine them into a single input image for each property to pass to the model. However, we quickly realized it was unnecessary and may also render undesirable results when combined with random image augmentation so scrapped the idea entirely. 
-
+'''
+st.image(f"{PROJECT_ROOT}/res/img/collage_graph.png")
+'''
 ### Depth Perception
 Using [DPT Large](https://huggingface.co/Intel/dpt-large), a pretrained depth prediction model created by professionals at intel, we can estimate the open area in the interior property photos. 
 
