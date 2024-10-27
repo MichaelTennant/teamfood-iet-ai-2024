@@ -1,8 +1,6 @@
 # https://docs.streamlit.io/develop/quick-reference/cheat-sheet
 
 import streamlit as st
-import pandas as pd
-from pathlib import Path
 
 st.set_page_config(
     page_title='Team Food - AI IET Challenge',
@@ -32,11 +30,11 @@ Randomly cropping images was experimented with - however due to concerns of loos
 
 #### Original Image
 '''
-st.image("res/img/augmentation_before.jpg")
+st.image("/res/img/augmentation_before.jpg")
 '''
 #### Augmented Image
 '''
-st.image("res/img/augmentation_after.jpg")
+st.image("/res/img/augmentation_after.jpg")
 '''
 
 After generating the augmented images, we now have 84 distinct training images for each property and a total of 35952 unique images to train the model. A much more respectable number than 1712.
@@ -54,11 +52,11 @@ Open planned properties typically have a higher demand and thus price as opposed
 
 #### DPT Large Input
 '''
-st.image("res/img/dpt_before.jpg")
+st.image("/res/img/dpt_before.jpg")
 '''
 #### DPT Large Output
 '''
-st.image("res/img/dpt_after.png")
+st.image("/res/img/dpt_after.png")
 '''
 ### Image Based Price Prediction Model
 
