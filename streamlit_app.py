@@ -11,14 +11,27 @@ st.set_page_config(
     page_icon=':pizza:',    # This is an emoji shortcode. Could be a URL too.
 )
 
+# Make wider
+st.markdown(
+    """
+    <style>
+        .stMainBlockContainer {
+            max-width: 1024px;
+        }
+    </style>
+    """, 
+    unsafe_allow_html=True
+)
+
 '''
+---
 # :house: AI House Pricing Prediction (Team Food)
 *We were here for the food.*
 
 ---
 
-## Training AI to  Decect Pricing from Property Images
-### Augmenting Image Data Decect Pricing from Property Images
+## Training AI to  Detect Pricing from Property Images
+### Augmenting Image Data Detect Pricing from Property Images
 To train a reliable image based AI model thousands of training images are required, however only 1712 images are supplied. Fortunately if you just apply a few transformations to the image, the AI won't be able to detect it is an image of the same place and you have effectively generated additional training data to create a more reliable model. This is otherwise known as image augmentation. 
 
 For each image in the training data we randomly applied randomly applied a selection of the following transformations to generate 20 additional images.
@@ -31,14 +44,14 @@ For each image in the training data we randomly applied randomly applied a selec
  - Shift image saturation.
 
 Randomly cropping images was experimented with - however due to concerns of loosing important details in the training data such as cropping out windows.
+'''
+col1, col2 = st.columns(2)
 
-#### Original Image
-'''
-st.image(f"{PROJECT_ROOT}/res/img/augmentation_before.jpg")
-'''
-#### Augmented Image
-'''
-st.image(f"{PROJECT_ROOT}/res/img/augmentation_after.jpg")
+col1.header("Original Image")
+col1.image(f"{PROJECT_ROOT}/res/img/augmentation_before.jpg")
+
+col2.header("Augmented Image")
+col2.image(f"{PROJECT_ROOT}/res/img/augmentation_after.jpg")
 '''
 In this particular example, the image is horizontally blured, flipped, and the colour temperature and saturation is increased. This creating a distinct image according to the AI model.
 
@@ -58,31 +71,23 @@ Using [DPT Large](https://huggingface.co/Intel/dpt-large), a pretrained depth pr
 Open planned properties typically have a higher demand and thus price as opposed to closed-planned properties. This is necessary data as the property square ft area cannot necessarly be used to determine how open planned a property is.
 
 Unfortunately the model does have a few issues and is not 100% reliable. For instance "99.kitchen.jpg" in image training data contains a large black oven, which DPT Large assumes is a long corridor.  
+'''
+col1, col2 = st.columns(2)
 
-#### DPT Large Input
-'''
-st.image(f"{PROJECT_ROOT}/res/img/dpt_before.jpg")
-'''
-#### DPT Large Output
-'''
-st.image(f"{PROJECT_ROOT}/res/img/dpt_after.png")
+col1.header("DPT Large Input")
+col1.image(f"{PROJECT_ROOT}/res/img/dpt_before.jpg")
+
+col2.header("DPT Large Output")
+col2.image(f"{PROJECT_ROOT}/res/img/dpt_after.png")
 '''
 ### Image Based Price Prediction Model
 The model is passed the image, which is resized to 448x448 with 3 colour channels. This data is further randomly augmented keras and passed through several relu keras layers, before finally returning a price prediction.
 
 Unfortunately due to time constraints we were unable to implement batch learning so we're limited to the 16GB GPU memory, and thus could only train the model on ~20% of the augmented data.
 
-#### Image Model Root Mean Square Error
-'''
-
-'''
-<insert image model Root Mean Square Error graph>
-'''
-
-'''
 ---
 
-## Training AI to Decect Pricing from Property Statistics
+## Training AI to Detect Pricing from Property Statistics
 ### Average Property Price in each Zip-Code
 We noticed that each zip-code in the test data was also in the training data so we replaced each zip-code with its average associated property prices. 
 '''
@@ -99,8 +104,6 @@ Uses a multilayer perceptron with the following inputs
  - Bedroom Count.
  - Square ft Area.
  - Average Price in Zip-Code (Or total average price if zip-code not in training data).
-
-Unfortunately the stats model was trained in chunks so we don't have a root mean square error over training epochs graph for this model.
 
 ### Combining the models
 Each AI model was trained separately to prevent overcomplicating the model and speed up training time signficiantly.
@@ -120,7 +123,17 @@ To combine all the models, after the staticics based price prediction model is t
 '''
 
 '''
-## Thank you!
+---
 '''
-st.image(f"{PROJECT_ROOT}/res/img/team_plus_extras.jpg")
-st.image(f"{PROJECT_ROOT}/res/img/team_plus_extras_depth.png")
+
+col1, col2 = st.columns(2)
+
+col1.header("Thank you!")
+col1.image(f"{PROJECT_ROOT}/res/img/team_plus_extras.jpg")
+
+col2.header("")
+col2.image(f"{PROJECT_ROOT}/res/img/team_plus_extras_depth.png")
+
+'''
+---
+'''
