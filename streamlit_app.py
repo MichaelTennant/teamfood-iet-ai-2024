@@ -55,11 +55,11 @@ Open planned properties typically have a higher demand and thus price as opposed
 
 #### DPT Large Input
 '''
-st.image("/res/img/dpt_before.jpg")
+st.image(f"{PROJECT_ROOT}/res/img/dpt_before.jpg")
 '''
 #### DPT Large Output
 '''
-st.image("/res/img/dpt_after.png")
+st.image(f"{PROJECT_ROOT}/res/img/dpt_after.png")
 '''
 ### Image Based Price Prediction Model
 
