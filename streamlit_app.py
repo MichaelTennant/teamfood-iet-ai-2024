@@ -1,6 +1,9 @@
 # https://docs.streamlit.io/develop/quick-reference/cheat-sheet
 
 import streamlit as st
+from pathlib import Path
+
+PROJECT_ROOT=Path(__file__).parent
 
 st.set_page_config(
     page_title='Team Food - AI IET Challenge',
@@ -30,11 +33,11 @@ Randomly cropping images was experimented with - however due to concerns of loos
 
 #### Original Image
 '''
-st.image("/res/img/augmentation_before.jpg")
+st.image(f"{PROJECT_ROOT}/res/img/augmentation_before.jpg")
 '''
 #### Augmented Image
 '''
-st.image("/res/img/augmentation_after.jpg")
+st.image(f"{PROJECT_ROOT}/res/img/augmentation_after.jpg")
 '''
 
 After generating the augmented images, we now have 84 distinct training images for each property and a total of 35952 unique images to train the model. A much more respectable number than 1712.
