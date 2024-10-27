@@ -47,7 +47,7 @@ After generating the augmented images, we now have 84 distinct training images f
 ### Counting Windows
 We realized another metric we can look at in properties to estimate the price is the quantity of windows a property has. In 1696 England introduced a window tax increase in the value of properties with more windows. While California hasn't introduced a window tax, house pricing follows a similar trend to England in regards to window quantity.
 
-By using resnet, we can annotate and count the number of windows visible in the frontal image.
+By using a pretrained [resnet](https://pytorch.org/hub/pytorch_vision_resnet/) model, we can annotate and count the number of windows visible in the frontal image.
 
 ### Collaging Images
 We initially decided to create a collage of the matching bathroom, bedroom, frontal, and kitchen images to combine them into a single input image for each property to pass to the model. However, we quickly realized it was unnecessary and may also render undesirable results when combined with random image augmentation so scrapped the idea entirely. 
@@ -66,8 +66,9 @@ st.image(f"{PROJECT_ROOT}/res/img/dpt_before.jpg")
 st.image(f"{PROJECT_ROOT}/res/img/dpt_after.png")
 '''
 ### Image Based Price Prediction Model
- - image -> resize to 448x448 (3 colour channels) -> model
- - uses relu
+The model is passed the image, which is resized to 448x448 with 3 colour channels. This data is further randomly augmented keras and passed through several relu keras layers, before finally returning a price prediction.
+
+Unfortunately due to time constraints we were unable to implement batch training so we're limited to the 16GB GPU memory, and thus could only train the model on ~20% of the augmented data.
 ---
 
 ## Training AI to Decect Pricing from Property Statistics
