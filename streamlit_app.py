@@ -12,7 +12,7 @@ st.set_page_config(
 
 '''
 # :house: AI House Pricing Prediction (Team Food)
-*We where here for the food.*
+*We were here for the food.*
 
 ---
 
@@ -39,11 +39,14 @@ st.image(f"{PROJECT_ROOT}/res/img/augmentation_before.jpg")
 '''
 st.image(f"{PROJECT_ROOT}/res/img/augmentation_after.jpg")
 '''
+In this particular example, the image is horizontally blured, flipped, and the colour temperature and saturation is increased. This creating a distinct image according to the AI model.
 
 After generating the augmented images, we now have 84 distinct training images for each property and a total of 35952 unique images to train the model. A much more respectable number than 1712.
 
 ### Counting Windows
-We realized another metric we can look at in properties to estimate the price is the quantity of windows a property has. By using resnet, we can annotate and count the number of windows visible in the frontal image.
+We realized another metric we can look at in properties to estimate the price is the quantity of windows a property has. In 1696 England introduced a window tax increase in the value of properties with more windows. While California hasn't introduced a window tax, house pricing follows a similar trend to England in regards to window quantity.
+
+By using resnet, we can annotate and count the number of windows visible in the frontal image.
 
 ### Collaging Images
 We initially decided to create a collage of the matching bathroom, bedroom, frontal, and kitchen images to combine them into a single input image for each property to pass to the model. However, we quickly realized it was unnecessary and may also render undesirable results when combined with random image augmentation so scrapped the idea entirely. 
@@ -62,7 +65,8 @@ st.image(f"{PROJECT_ROOT}/res/img/dpt_before.jpg")
 st.image(f"{PROJECT_ROOT}/res/img/dpt_after.png")
 '''
 ### Image Based Price Prediction Model
-
+ - image -> resize to 448x448 (3 colour channels) -> model
+ - uses relu
 ---
 
 ## Training AI to Decect Pricing from Property Statistics
@@ -74,7 +78,15 @@ This allows for the AI model to use average zip-code prices as an input with a c
 However it is plausible that AI model will encounter a zip-code it has never encountered before and thus does not have the average property price for the area stored. If this occurs the node will be passed the average property price from the training data overall.
 
 ### Staticics Based Price Prediction Model
+Uses a multilayer perceptron
 
 ### Combining the models
 Each AI model was trained separately...
+
+To combine all the models, after the staticics based price prediction model is trained, we add the following addition numerical inputs and continue training
+ - Lower Quartile Distance from DPT Large on bathroom.
+ - Lower Quartile Distance from DPT Large on bedroom.
+ - Lower Quartile Distance from DPT Large on kitchen.
+ - Quantity of detected windows from frontal.
+ - Detected price from image based price prediction model
 '''
