@@ -1,6 +1,8 @@
-# :earth_americas: GDP dashboard template
+# :house: AI Property Pricing Prediction
+## :pizza: Team Food - AI IET Challenge 2024 
+*We where here for the food*
 
-A simple Streamlit app showing the GDP of different countries in the world.
+A streamlet application to present our AI property pricing prediction model that we trained for the [AI IET Challenge 2024](https://events.theiet.org/events/the-iet-ai-challenge/)
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://gdp-dashboard-template.streamlit.app/)
 

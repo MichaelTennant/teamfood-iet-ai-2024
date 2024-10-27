@@ -1,151 +1,79 @@
+# https://docs.streamlit.io/develop/quick-reference/cheat-sheet
+
 import streamlit as st
 import pandas as pd
-import math
 from pathlib import Path
 
-# Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
-    page_title='GDP dashboard',
-    page_icon=':earth_americas:', # This is an emoji shortcode. Could be a URL too.
+    page_title='Team Food - AI IET Challenge',
+    page_icon=':pizza:',    # This is an emoji shortcode. Could be a URL too.
 )
 
-# -----------------------------------------------------------------------------
-# Declare some useful functions.
-
-@st.cache_data
-def get_gdp_data():
-    """Grab GDP data from a CSV file.
-
-    This uses caching to avoid having to read the file every time. If we were
-    reading from an HTTP endpoint instead of a file, it's a good idea to set
-    a maximum age to the cache with the TTL argument: @st.cache_data(ttl='1d')
-    """
-
-    # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
-    DATA_FILENAME = Path(__file__).parent/'data/gdp_data.csv'
-    raw_gdp_df = pd.read_csv(DATA_FILENAME)
-
-    MIN_YEAR = 1960
-    MAX_YEAR = 2022
-
-    # The data above has columns like:
-    # - Country Name
-    # - Country Code
-    # - [Stuff I don't care about]
-    # - GDP for 1960
-    # - GDP for 1961
-    # - GDP for 1962
-    # - ...
-    # - GDP for 2022
-    #
-    # ...but I want this instead:
-    # - Country Name
-    # - Country Code
-    # - Year
-    # - GDP
-    #
-    # So let's pivot all those year-columns into two: Year and GDP
-    gdp_df = raw_gdp_df.melt(
-        ['Country Code'],
-        [str(x) for x in range(MIN_YEAR, MAX_YEAR + 1)],
-        'Year',
-        'GDP',
-    )
-
-    # Convert years from string to integers
-    gdp_df['Year'] = pd.to_numeric(gdp_df['Year'])
-
-    return gdp_df
-
-gdp_df = get_gdp_data()
-
-# -----------------------------------------------------------------------------
-# Draw the actual page
-
-# Set the title that appears at the top of the page.
 '''
-# :earth_americas: GDP dashboard
+# :house: AI House Pricing Prediction (Team Food)
+*We where here for the food.*
 
-Browse GDP data from the [World Bank Open Data](https://data.worldbank.org/) website. As you'll
-notice, the data only goes to 2022 right now, and datapoints for certain years are often missing.
-But it's otherwise a great (and did I mention _free_?) source of data.
+---
+
+## Training AI to  Decect Pricing from Property Images
+### Augmenting Image Data Decect Pricing from Property Images
+To train a reliable image based AI model thousands of training images are required, however only 1712 images are supplied. Fortunately if you just apply a few transformations to the image, the AI won't be able to detect it is an image of the same place and you have effectively generated additional training data to create a more reliable model. This is otherwise known as image augmentation. 
+
+For each image in the training data we randomly applied randomly applied a selection of the following transformations to generate 20 additional images.
+ - Flip from left to right (training on upsidedown houses doesn't make much sense).
+ - Rotate between 0-10 degrees clockwise or anticlockwise.
+ - Stretch image in the x and y axis independently.
+ - Gaussian blur with weight between 0.0 and 2.0 on image.
+ - Shift image colour tempurature.
+ - Shift image brightness.
+ - Shift image saturation.
+
+Randomly cropping images was experimented with - however due to concerns of loosing important details in the training data such as cropping out windows.
+
+#### Original Image
+'''
+st.image("res/img/augmentation_before.jpg")
+'''
+#### Augmented Image
+'''
+st.image("res/img/augmentation_after.jpg")
 '''
 
-# Add some spacing
-''
-''
+After generating the augmented images, we now have 84 distinct training images for each property and a total of 35952 unique images to train the model. A much more respectable number than 1712.
 
-min_value = gdp_df['Year'].min()
-max_value = gdp_df['Year'].max()
+### Counting Windows
+We realized another metric we can look at in properties to estimate the price is the quantity of windows a property has. By using resnet, we can annotate and count the number of windows visible in the frontal image.
 
-from_year, to_year = st.slider(
-    'Which years are you interested in?',
-    min_value=min_value,
-    max_value=max_value,
-    value=[min_value, max_value])
+### Collaging Images
+We initially decided to create a collage of the matching bathroom, bedroom, frontal, and kitchen images to combine them into a single input image for each property to pass to the model. However, we quickly realized it was unnecessary and may also render undesirable results when combined with random image augmentation so scrapped the idea entirely. 
 
-countries = gdp_df['Country Code'].unique()
+### Depth Perception
+Using [DPT Large](https://huggingface.co/Intel/dpt-large), a pretrained depth prediction model created by professionals at intel, we can estimate the open area in the interior property photos. 
 
-if not len(countries):
-    st.warning("Select at least one country")
+Open planned properties typically have a higher demand and thus price as opposed to closed-planned properties. This is necessary data as the property square foot area cannot necessarly be used to determine how open planned a property is.
 
-selected_countries = st.multiselect(
-    'Which countries would you like to view?',
-    countries,
-    ['DEU', 'FRA', 'GBR', 'BRA', 'MEX', 'JPN'])
+#### DPT Large Input
+'''
+st.image("res/img/dpt_before.jpg")
+'''
+#### DPT Large Output
+'''
+st.image("res/img/dpt_after.png")
+'''
+### Image Based Price Prediction Model
 
-''
-''
-''
+---
 
-# Filter the data
-filtered_gdp_df = gdp_df[
-    (gdp_df['Country Code'].isin(selected_countries))
-    & (gdp_df['Year'] <= to_year)
-    & (from_year <= gdp_df['Year'])
-]
+## Training AI to Decect Pricing from Property Statistics
+### Ranking Zip-Codes
+We noticed that each zip-code in the test data was also in the training data so we replaced each zip-code with its average associated property prices. 
 
-st.header('GDP over time', divider='gray')
+This allows for the AI model to use average zip-code prices as an input with a clear association instead of the seemingly random zip-codes themselves.
 
-''
+However it is plausible that AI model will encounter a zip-code it has never encountered before and thus does not have the average property price for the area stored. If this occurs the node will be passed the average property price from the training data overall.
 
-st.line_chart(
-    filtered_gdp_df,
-    x='Year',
-    y='GDP',
-    color='Country Code',
-)
+### Staticics Based Price Prediction Model
 
-''
-''
-
-
-first_year = gdp_df[gdp_df['Year'] == from_year]
-last_year = gdp_df[gdp_df['Year'] == to_year]
-
-st.header(f'GDP in {to_year}', divider='gray')
-
-''
-
-cols = st.columns(4)
-
-for i, country in enumerate(selected_countries):
-    col = cols[i % len(cols)]
-
-    with col:
-        first_gdp = first_year[first_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
-        last_gdp = last_year[last_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
-
-        if math.isnan(first_gdp):
-            growth = 'n/a'
-            delta_color = 'off'
-        else:
-            growth = f'{last_gdp / first_gdp:,.2f}x'
-            delta_color = 'normal'
-
-        st.metric(
-            label=f'{country} GDP',
-            value=f'{last_gdp:,.0f}B',
-            delta=growth,
-            delta_color=delta_color
-        )
+### Combining the models
+Each AI model was trained separately...
+'''
