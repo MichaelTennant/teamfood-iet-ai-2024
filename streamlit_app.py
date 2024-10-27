@@ -2,6 +2,7 @@
 
 import streamlit as st
 from pathlib import Path
+import pandas as pd
 
 PROJECT_ROOT=Path(__file__).parent
 
@@ -54,7 +55,7 @@ We initially decided to create a collage of the matching bathroom, bedroom, fron
 ### Depth Perception
 Using [DPT Large](https://huggingface.co/Intel/dpt-large), a pretrained depth prediction model created by professionals at intel, we can estimate the open area in the interior property photos. 
 
-Open planned properties typically have a higher demand and thus price as opposed to closed-planned properties. This is necessary data as the property square foot area cannot necessarly be used to determine how open planned a property is.
+Open planned properties typically have a higher demand and thus price as opposed to closed-planned properties. This is necessary data as the property square ft area cannot necessarly be used to determine how open planned a property is.
 
 #### DPT Large Input
 '''
@@ -70,15 +71,22 @@ st.image(f"{PROJECT_ROOT}/res/img/dpt_after.png")
 ---
 
 ## Training AI to Decect Pricing from Property Statistics
-### Ranking Zip-Codes
+### Average Property Price in each Zip-Code
 We noticed that each zip-code in the test data was also in the training data so we replaced each zip-code with its average associated property prices. 
-
+'''
+zipcode_avrprice_df = pd.read_csv(f"{PROJECT_ROOT}/res/data/zipcode_avrprice.csv").set_index("ZipCode")[["AvrPrice"]]
+st.bar_chart(zipcode_avrprice_df, x_label="Zip-Code", y_label="Average Property Price ($USD)")
+'''
 This allows for the AI model to use average zip-code prices as an input with a clear association instead of the seemingly random zip-codes themselves.
 
-However it is plausible that AI model will encounter a zip-code it has never encountered before and thus does not have the average property price for the area stored. If this occurs the node will be passed the average property price from the training data overall.
+However it is plausible that AI model will encounter a zip-code it has never encountered before and thus does not have the average property price for the area stored. If this occurs the node will be passed the average property price of ~$598598 from the training data overall.
 
 ### Staticics Based Price Prediction Model
-Uses a multilayer perceptron
+Uses a multilayer perceptron with the following inputs
+ - Bathroom Count.
+ - Bedroom Count.
+ - Square ft Area.
+ - Average Price in Zip-Code (Or total average price if zip-code not in training data).
 
 ### Combining the models
 Each AI model was trained separately...
