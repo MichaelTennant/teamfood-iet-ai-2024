@@ -11,7 +11,7 @@ st.set_page_config(
     page_icon=':pizza:',    # This is an emoji shortcode. Could be a URL too.
 )
 
-# Make wider
+# Allow for page to be wider if nessessary
 st.markdown(
     """
     <style>
@@ -81,8 +81,10 @@ col2.header("DPT Large Output")
 col2.image(f"{PROJECT_ROOT}/res/img/dpt_after.png")
 '''
 ### Image Based Price Prediction Model
-The model is passed the image, which is resized to 448x448 with 3 colour channels. This data is further randomly augmented keras and passed through several relu keras layers, before finally returning a price prediction.
-
+The model is passed the image, which is resized to 448x448 with 3 colour channels. This data is further randomly augmented using keras by changing the contrast, flipping it, and rotating it. This is passed through several relu keras layers, before finally returning a single price prediction.
+'''
+st.image(f"{PROJECT_ROOT}/res/img/img_model_graph.png")
+'''
 Unfortunately due to time constraints we were unable to implement batch learning so we're limited to the 16GB GPU memory, and thus could only train the model on ~20% of the augmented data.
 
 ---
