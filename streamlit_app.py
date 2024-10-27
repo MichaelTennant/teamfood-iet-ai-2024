@@ -4,14 +4,16 @@ import streamlit as st
 from pathlib import Path
 import pandas as pd
 
+
 PROJECT_ROOT=Path(__file__).parent
+
 
 st.set_page_config(
     page_title='Team Food - AI IET Challenge',
     page_icon=':pizza:',    # This is an emoji shortcode. Could be a URL too.
 )
 
-# Allow for page to be wider if nessessary
+# Allow for page to be wider if nessessary (up to 1024 pixels)
 st.markdown(
     """
     <style>
@@ -45,6 +47,7 @@ For each image in the training data we randomly applied randomly applied a selec
 
 Randomly cropping images was experimented with - however due to concerns of loosing important details in the training data such as cropping out windows.
 '''
+
 col1, col2 = st.columns(2)
 
 col1.header("Original Image")
@@ -52,6 +55,7 @@ col1.image(f"{PROJECT_ROOT}/res/img/augmentation_before.jpg")
 
 col2.header("Augmented Image")
 col2.image(f"{PROJECT_ROOT}/res/img/augmentation_after.jpg")
+
 '''
 In this particular example, the image is horizontally blured, flipped, and the colour temperature and saturation is increased. This creating a distinct image according to the AI model.
 
@@ -65,7 +69,9 @@ By using a pretrained [resnet](https://pytorch.org/hub/pytorch_vision_resnet/) m
 ### Collaging Images
 We initially decided to create a collage of the matching bathroom, bedroom, frontal, and kitchen images to combine them into a single input image for each property to pass to the model. However, we quickly realized it was unnecessary and may also render undesirable results when combined with random image augmentation so scrapped the idea entirely. 
 '''
+
 st.image(f"{PROJECT_ROOT}/res/img/collage_graph.png")
+
 '''
 ### Depth Perception
 Using [DPT Large](https://huggingface.co/Intel/dpt-large), a pretrained depth prediction model created by professionals at intel, we can estimate the open area in the interior property photos. 
@@ -74,6 +80,7 @@ Open planned properties typically have a higher demand and thus price as opposed
 
 Unfortunately the model does have a few issues and is not 100% reliable. For instance "99.kitchen.jpg" in image training data contains a large black oven, which DPT Large assumes is a long corridor.  
 '''
+
 col1, col2 = st.columns(2)
 
 col1.header("DPT Large Input")
@@ -81,13 +88,18 @@ col1.image(f"{PROJECT_ROOT}/res/img/dpt_before.jpg")
 
 col2.header("DPT Large Output")
 col2.image(f"{PROJECT_ROOT}/res/img/dpt_after.png")
+
 '''
 ### Image Based Price Prediction Model
 The model is passed the image, which is resized to 448x448 with 3 colour channels. This data is further randomly augmented using keras by changing the contrast, flipping it, and rotating it. This is passed through several relu keras layers, before finally returning a single price prediction.
 '''
+
 st.image(f"{PROJECT_ROOT}/res/img/img_model_graph.png")
+
 '''
 Unfortunately due to time constraints we were unable to implement batch learning so we're limited to the 16GB GPU memory, and thus could only train the model on ~20% of the augmented data.
+
+Error ~ 10%
 
 ---
 
@@ -95,8 +107,10 @@ Unfortunately due to time constraints we were unable to implement batch learning
 ### Average Property Price in each Zip-Code
 We noticed that each zip-code in the test data was also in the training data so we replaced each zip-code with its average associated property prices. 
 '''
+
 zipcode_avrprice_df = pd.read_csv(f"{PROJECT_ROOT}/res/data/zipcode_avrprice.csv").set_index("ZipCode")[["AvrPrice"]]
 st.bar_chart(zipcode_avrprice_df, x_label="Zip-Code", y_label="Average Property Price ($USD)")
+
 '''
 This allows for the AI model to use average zip-code prices as an input with a clear association instead of the seemingly random zip-codes themselves.
 
@@ -109,6 +123,10 @@ Uses a multilayer perceptron with the following inputs
  - Square ft Area.
  - Average Price in Zip-Code (Or total average price if zip-code not in training data).
 
+### Synthetic generated data
+The synthetic data generation works by taking both the upper and lower quartiles of the housing data, and generating new data present within one standard deviation of each quartile respectively. This way, the generated data combined with the original data still has the same median and mean, whilst being able to have a higher variance, allowing for a more diverse set of data for the model to train from
+this improved our root mean square error model results from 1.75 to 0.97.
+
 ### Combining the models
 Each AI model was trained separately to prevent overcomplicating the model and speed up training time signficiantly.
 
@@ -117,15 +135,12 @@ To combine all the models, after the staticics based price prediction model is t
  - Lower Quartile Distance from DPT Large on bedroom.
  - Lower Quartile Distance from DPT Large on kitchen.
  - Quantity of detected windows from frontal.
- - Detected price from image based price prediction model
 
- #### Combined Model Root Mean Square Error
-'''
+We then planned to use another AI model to combine the two results from the modified statistics based prediction model and the image based model, yielding a single output. However we ran out of time on training the image and image+stats combinator model.
 
+#### AI Model Pipeline Plan
 '''
-<insert combined model Root Mean Square Error graph>
-'''
-
+st.image(f"{PROJECT_ROOT}/res/img/combined_model_diagram.png")
 '''
 ---
 '''
